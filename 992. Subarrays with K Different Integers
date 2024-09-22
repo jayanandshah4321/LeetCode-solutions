@@ -1,0 +1,38 @@
+ 992. Subarrays with K Different Integers 
+
+class Solution {
+    public int func(int[] nums, int k){
+        HashMap<Integer,Integer>hm=new HashMap<>();
+        int l=0,r=0;
+        int count=0;
+        while(r<nums.length){
+            hm.put(nums[r],hm.getOrDefault(nums[r],0)+1);
+            if(hm.size()>k){
+                //window slide karo
+                while(l<r && hm.size()>k){
+                    int num=nums[l];
+                    int freq=hm.get(num);
+                    if(freq-1==0){
+                        hm.remove(num);
+                    }
+                    else{
+                        hm.put(num,hm.getOrDefault(num,0)-1);
+                    }
+                    l++;
+                }
+            }
+            
+                //ye wale window ke sab subarray count mea add karo
+                count+=r-l+1;
+            
+            r++;
+        }
+        return count;
+    }
+    public int subarraysWithKDistinct(int[] nums, int k) {
+        if(k==1){
+            return func(nums,k);
+        }
+        return func(nums,k)-func(nums,k-1);
+    }
+}
