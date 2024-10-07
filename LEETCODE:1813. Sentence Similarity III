@@ -1,0 +1,42 @@
+LEETCODE:1813. Sentence Similarity III
+import java.util.Arrays;
+import java.util.List;
+
+class Solution {
+
+    public boolean helper(List<String> s1list, List<String> s2list) {
+        int i = 0, j = 0;
+
+        // Matching the beginning part of both sentences
+        while (i < s1list.size() && j < s2list.size() && s1list.get(i).equals(s2list.get(j))) {
+            i++;
+            j++;
+        }
+
+        // Matching the ending part of both sentences
+        int x = s1list.size() - 1;
+        int y = s2list.size() - 1;
+        while (x >= i && y >= j && s1list.get(x).equals(s2list.get(y))) {
+            x--;
+            y--;
+        }
+
+        // If we managed to match all of s1's words, return true
+        return i > x;
+    }
+
+    public boolean areSentencesSimilar(String s1, String s2) {
+        // Split the sentences into lists of words
+        List<String> s1list = Arrays.asList(s1.split(" "));
+        List<String> s2list = Arrays.asList(s2.split(" "));
+        
+        // Check which one is shorter, and try to match it with the longer one
+        if (s1list.size() > s2list.size()) {
+            return helper(s2list, s1list);  // Check if s2list can be matched to s1list
+        } else {
+            return helper(s1list, s2list);  // Check if s1list can be matched to s2list
+        }
+    }
+
+    
+}
