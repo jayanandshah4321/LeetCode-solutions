@@ -1,0 +1,29 @@
+347. Top K Frequent Elements
+OPTIMAL APPROACH TC:O(n)
+class Solution {
+    public int[] topKFrequent(int[] nums, int k) {
+        ArrayList<ArrayList<Integer>>al=new ArrayList<>();
+        int n=nums.length;
+        HashMap<Integer,Integer>hm=new HashMap<>();
+        int freq[]=new int[n+1];
+        for(int i=0;i<n;i++){
+            hm.put(nums[i],hm.getOrDefault(nums[i],0)+1);
+            al.add(new ArrayList<>());
+        }
+        al.add(new ArrayList<>());
+        for(int key:hm.keySet()){
+            al.get(hm.get(key)).add(key);
+        }
+        int ans[]=new int[k];
+        int track=0;
+        for(int i=n;i>=0;i--){
+            for(int j=0;j<al.get(i).size();j++){
+                if(k==0){return ans;}
+                ans[track]=al.get(i).get(j);
+                k--;
+                track++;
+            }
+        }
+        return ans;
+    }
+}
