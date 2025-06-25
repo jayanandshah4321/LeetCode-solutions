@@ -1,0 +1,49 @@
+373. Find K Pairs with Smallest Sums
+import java.util.*;
+
+class Solution {
+    static class Tuple {
+        int val, i, j;
+        Tuple(int a, int b, int c) {
+            val = a;
+            i = b;
+            j = c;
+        }
+    }
+
+    public List<List<Integer>> kSmallestPairs(int[] nums1, int[] nums2, int k) {
+        List<List<Integer>> ans = new ArrayList<>();
+        int n = nums1.length, m = nums2.length;
+
+        if (n == 0 || m == 0 || k == 0) return ans;
+
+        // Correct comparator using lambda
+        PriorityQueue<Tuple> pq = new PriorityQueue<>((a, b) -> a.val - b.val);
+
+        // Start with the first pair
+        pq.add(new Tuple(nums1[0] + nums2[0], 0, 0));
+
+        while ( ans.size() < k) {
+            Tuple tup = pq.poll();
+            int i = tup.i, j = tup.j;
+
+            // Add current pair to result
+            List<Integer> temp = new ArrayList<>();
+            temp.add(nums1[i]);
+            temp.add(nums2[j]);
+            ans.add(temp);
+
+            // Move right in nums1 (down the matrix)
+            if (i + 1 < n) {
+                pq.add(new Tuple(nums1[i + 1] + nums2[j], i + 1, j));
+            }
+
+            // Move right in nums2 (across the matrix)
+            if (j + 1 < m && i == 0) {
+                pq.add(new Tuple(nums1[i] + nums2[j + 1], i, j + 1));
+            }
+        }
+
+        return ans;
+    }
+}
