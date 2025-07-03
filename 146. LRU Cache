@@ -1,0 +1,72 @@
+146. LRU Cache
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashMap;
+
+public class LRUCache {
+    private final int capacity;
+    private long timeCounter = 0;
+
+    // Each entry in the map holds the current value and its latest timestamp
+    private static class Entry {
+        int value;
+        long timestamp;
+        Entry(int v, long t) { value = v; timestamp = t; }
+    }
+
+    // Tuple in the deque: key + the timestamp when it was last touched
+    private static class Tuple {
+        int key;
+        long timestamp;
+        Tuple(int k, long t) { key = k; timestamp = t; }
+    }
+
+    private final HashMap<Integer, Entry> map;
+    private final Deque<Tuple> deque;
+
+    public LRUCache(int capacity) {
+        this.capacity = capacity;
+        this.map = new HashMap<>(capacity);
+        this.deque = new ArrayDeque<>();
+    }
+
+    public int get(int key) {
+        Entry e = map.get(key);
+        if (e == null) return -1;
+
+        // bump timestamp and re‑append
+        long now = ++timeCounter;
+        e.timestamp = now;
+        deque.addLast(new Tuple(key, now));
+        return e.value;
+    }
+
+    public void put(int key, int value) {
+        long now = ++timeCounter;
+        if (map.containsKey(key)) {
+            // update existing
+            Entry e = map.get(key);
+            e.value = value;
+            e.timestamp = now;
+        } else {
+            // new key
+            map.put(key, new Entry(value, now));
+        }
+        // in both cases, append a touch record
+        deque.addLast(new Tuple(key, now));
+
+        // if over capacity, evict true LRU
+        if (map.size() > capacity) {
+            // repeatedly pop front until we find a tuple that matches the map's timestamp
+            while (true) {
+                Tuple t = deque.pollFirst();
+                Entry current = map.get(t.key);
+                // if this tuple is stale, skip it; otherwise it's the LRU
+                if (current != null && current.timestamp == t.timestamp) {
+                    map.remove(t.key);
+                    break;
+                }
+            }
+        }
+    }
+}
